@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.ggp.base.apps.player.detail.DetailPanel;
 import org.ggp.base.apps.player.detail.SimpleDetailPanel;
+import org.ggp.base.player.gamer.event.GamerSelectedMoveEvent;
 import org.ggp.base.player.gamer.exception.GamePreviewException;
 import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
 import org.ggp.base.util.game.Game;
@@ -55,5 +56,22 @@ public abstract class PositronicGamer extends StateMachineGamer {
 	@Override
 	public void preview(Game g, long timeout) throws GamePreviewException {
 		// Positronic gamers do no game previewing.
+	}
+
+	// Default implementations follow, can be overridden
+	public Move bestMove(Role role, MachineState state) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
+		return null;
+	}
+	
+	public Move stateMachineSelectMove(long timeout)
+			throws TransitionDefinitionException, MoveDefinitionException,
+			GoalDefinitionException {
+		long start = System.currentTimeMillis();
+		List<Move> moves = getStateMachine().getLegalMoves(getCurrentState(), getRole());
+		Move selection = bestMove(getRole(), getCurrentState());
+		
+		long stop = System.currentTimeMillis();
+		notifyObservers(new GamerSelectedMoveEvent(moves, selection, stop - start));
+		return selection;
 	}
 }
