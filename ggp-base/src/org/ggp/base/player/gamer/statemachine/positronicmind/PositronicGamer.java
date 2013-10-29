@@ -56,35 +56,4 @@ public abstract class PositronicGamer extends StateMachineGamer {
 	public void preview(Game g, long timeout) throws GamePreviewException {
 		// Positronic gamers do no game previewing.
 	}
-	
-	public int value(Role role, MachineState state) throws GoalDefinitionException, MoveDefinitionException, TransitionDefinitionException {
-		StateMachine sm = getStateMachine();
-		if (sm.isTerminal(state)) return sm.getGoal(state, role);
-		int score = 0;
-		List<Move> moves = sm.getLegalMoves(state, role);
-		
-		for (int i = 0; i < moves.size(); i++) {
-			int result = value(role, sm.getNextState(state, moves.subList(i, i+1)));
-			if (result > score) score = result;
-		}
-		
-		return score;
-	}
-	
-	public Move bestMove(Role role, MachineState state) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
-		StateMachine sm = getStateMachine();
-		List<Move> moves = sm.getLegalMoves(state, role);
-		Move action = moves.get(0);
-		int score = 0;
-		
-		for (int i = 0; i < moves.size(); i++) {
-			int result = value(role, sm.getNextState(state, moves.subList(i, i+1)));
-			if (result > score) {
-				action = moves.get(i);
-				score = result;
-			}
-		}
-		
-		return action;
-	}
 }
