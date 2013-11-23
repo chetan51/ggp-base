@@ -29,19 +29,34 @@ public abstract class PositronicGamer extends StateMachineGamer {
 	 * If you are working on : public abstract class MyGamer extends PositronicGamer
 	 * Then this function would return "MyPositronicGamer"
 	 */
+	@Override
 	public String getName() {
 		return getClass().getSimpleName();
 	}
 	
 	// This is the default State Machine
+	@Override
 	public StateMachine getInitialStateMachine() {
 		return new CachedStateMachine(new ProverStateMachine());
 	}	
 
 	// This is the default Sample Panel
+	@Override
 	public DetailPanel getDetailPanel() {
 		return new SimpleDetailPanel();
-	}	
+	}
+	
+	public Role getOpponentRole(Role role, StateMachine sm) {
+		List<Role> roles = sm.getRoles();
+		Role r = null;
+		
+		for (int i = 0; i < roles.size(); i++) {
+			r = roles.get(i);
+			if (r != role) break;
+		}
+		
+		return r;
+	}
 	
 	@Override
 	public void stateMachineStop() {
@@ -63,6 +78,7 @@ public abstract class PositronicGamer extends StateMachineGamer {
 		return null;
 	}
 	
+	@Override
 	public Move stateMachineSelectMove(long timeout)
 			throws TransitionDefinitionException, MoveDefinitionException,
 			GoalDefinitionException {
